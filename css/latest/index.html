@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" manifest="cache.manifest">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viking Community // PS4 6.00-11.02 HOST / 2.4B18.12</title>
+    <style>
+        :root {
+            --bg: transparent;
+            --panel: #1c1c1c;
+            --panel-2: #242424;
+            --line: #2e2e2e;
+            --line-bright: #454545;
+            --text: #f5f5f5;
+            --muted: #b5b5b5;
+            --dim: #828282;
+            --accent: #a294ff;
+            --red: #ff9b9b;
+            --amber: #e1bd72;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { background: var(--bg); }
+        html, body { min-height: 100%; }
+        body {
+            background-color: transparent;
+            background-image: url('../../background.webp');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            font: 17px/1.4 Consolas, "Liberation Mono", monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        a { color: inherit; }
+
+        .app { display: flex; flex: 1 0 auto; flex-direction: column; margin: 0 auto; padding: 14px 26px 12px; width: min(100% - 52px, 1220px); }
+
+        /* Top status bar */
+        .bar {
+            align-items: center;
+            border: 1px solid var(--line-bright);
+            display: flex;
+            font-size: 14px;
+            justify-content: space-between;
+            letter-spacing: .1em;
+            padding: 10px 16px;
+            text-transform: uppercase;
+        }
+        .bar b { color: var(--accent); font-weight: 400; }
+        .bar-fw { color: var(--dim); }
+        .bar-fw::before { color: var(--accent); content: "\25CF "; }
+
+        .layout { display: flex; flex: 1 0 auto; flex-direction: column; padding: 20px 0 0; }
+
+        /* Header */
+        .kicker { color: var(--accent); font-size: 14px; letter-spacing: .14em; margin: 0 0 12px; }
+        h1 { font-size: clamp(34px, 5vw, 56px); font-weight: 400; letter-spacing: -.07em; line-height: 1; margin: 0; }
+        h1 em { color: var(--accent); font-style: normal; }
+        .sub { color: var(--muted); font-size: 17px; margin: 13px 0 0; max-width: 720px; }
+        .boot { color: var(--dim); font-size: 14px; list-style: none; margin: 12px 0 0; }
+        .boot li { margin: 3px 0; }
+        .boot b { color: var(--accent); font-weight: 400; }
+        #UA { color: var(--dim); display: block; font-size: 12px; margin-top: 10px; overflow-wrap: anywhere; }
+        /* Offline cache stage (upstream inline script target) */
+        #cache { color: var(--dim); font-size: 13px; margin: 6px 0 0; min-height: 16px; }
+        #cache.cacheok { color: var(--accent); }
+
+        /* Status / exploit output */
+        .status {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            margin-top: 20px;
+            padding: 14px 16px;
+        }
+        .status-label {
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 14px;
+            letter-spacing: .12em;
+            margin-bottom: 11px;
+            padding: 0 4px 10px;
+            text-transform: uppercase;
+        }
+        /* logger target in src/misc.js - keep id, pre-wrap and bounds */
+        #console {
+            background: var(--panel-2);
+            border: 1px solid var(--line-bright);
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            line-height: 1.45;
+            max-height: 132px;
+            min-height: 42px;
+            overflow: auto;
+            padding: 10px 14px;
+            white-space: pre-wrap;
+        }
+
+        /* Controls */
+        .controls { border: 1px solid var(--line); margin-top: 14px; padding: 14px; }
+        .section-title {
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 14px;
+            letter-spacing: .12em;
+            margin-bottom: 11px;
+            padding: 0 4px 10px;
+            text-transform: uppercase;
+        }
+        #kernel-options { align-items: center; display: flex; flex-wrap: wrap; gap: 10px 14px; }
+        .chain-label { color: var(--muted); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+        .chain-options { display: flex; gap: 8px; }
+        #kernel-options input[type="radio"] { height: 1px; opacity: 0; position: absolute; width: 1px; }
+        .chain-option,
+        #jeilbrek,
+        #reloadBtn,
+        .auto-jb-label {
+            background: var(--panel);
+            border: 1px solid var(--line-bright);
+            color: var(--text);
+            cursor: pointer;
+            font: inherit;
+            min-height: 48px;
+            padding: 10px 14px;
+        }
+        #kernel-options input[type="radio"]:focus + .chain-option,
+        #kernel-options input[type="radio"]:checked + .chain-option,
+        .chain-option:hover,
+        #jeilbrek:hover,
+        #jeilbrek:focus,
+        #reloadBtn:hover,
+        #reloadBtn:focus,
+        .auto-jb-label:hover {
+            background: var(--panel-2);
+            border-color: var(--accent);
+            color: var(--accent);
+            outline: 0;
+        }
+        #kernel-options input[type="radio"]:focus + .chain-option,
+        #jeilbrek:focus,
+        #reloadBtn:focus { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+        #jeilbrek:disabled { cursor: wait; opacity: .55; }
+        .auto-jb { align-items: center; display: flex; gap: 8px; }
+        .auto-jb-label { align-items: center; display: flex; font-size: 14px; text-transform: none; }
+        .auto-jb-label:focus { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); outline: 0; }
+        #autoJbInput { height: 18px; width: 18px; }
+
+        /* Footer */
+        .foot {
+            border-top: 1px solid var(--line);
+            color: var(--dim);
+            font-size: 13px;
+            margin-top: 16px;
+            padding: 12px 4px 2px;
+            text-align: center;
+        }
+        .foot a { color: var(--muted); }
+        .foot a:hover, .foot a:focus { color: var(--accent); }
+        .foot div { margin: 2px 0; }
+
+        @media (max-width: 760px) {
+            body { overflow: auto; }
+            .app { padding: 8px 10px; width: min(100% - 20px, 560px); }
+            .bar { font-size: 12px; padding: 8px 12px; }
+            .layout { padding-top: 14px; }
+            h1 { font-size: 38px; }
+            .sub { font-size: 16px; }
+            #kernel-options { align-items: flex-start; flex-direction: column; }
+            .chain-options { width: 100%; }
+            .chain-option { flex: 1; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <header class="bar">
+            <span><b>Viking Community</b> // استضافة بلايستيشن 4</span>
+            <span class="bar-fw">إصدار 6.00-11.02 جاهز</span>
+        </header>
+
+        <main class="layout">
+            <p class="kicker">$ ./launch --cssfontface</p>
+            <h1>استضافة CSSFontFace <em>6.00-11.02</em></h1>
+            <p class="sub">محمل GoldHEN تلقائي محلي بواسطة Viking Community.</p>
+            <ul class="boot">
+                <li>[ <b>موافق</b> ] سلسلة cssfontface جاهزة</li>
+                <li>[ <b>موافق</b> ] goldhen v2.4b18.12 محمل</li>
+                <li>[ <b>موافق</b> ] التخزين المحلي جاهز</li>
+            </ul>
+            <p id="UA">يعمل على:</p>
+            <p id="cache">جاري فحص التخزين المحلي...</p>
+
+            <div class="status">
+                <div class="status-label">مخرجات الاستغلال</div>
+                <pre id="console">جاهز. بانتظار التنفيذ...</pre>
+            </div>
+
+            <section class="controls">
+                <div class="section-title">التحكم بالاستغلال</div>
+                <form id="kernel-options">
+                    <span class="chain-label">سلسلة النواة</span>
+                    <div class="chain-options">
+                        <input type="radio" name="kernel" id="netctrl-exploit" value="netctrl">
+                        <label class="chain-option" for="netctrl-exploit">Poops</label>
+                        <input type="radio" name="kernel" id="lapse-exploit" value="lapse">
+                        <label class="chain-option" for="lapse-exploit">Lapse</label>
+                    </div>
+                    <button id="jeilbrek" type="button">تفكيك</button>
+                    <button id="reloadBtn" type="button">إعادة تحميل</button>
+                    <div class="auto-jb">
+                        <label class="auto-jb-label" for="autoJbInput" id="autoJbLabel">تفكيك تلقائي</label>
+                        <input id="autoJbInput" type="checkbox">
+                    </div>
+                </form>
+            </section>
+
+            <footer class="foot">
+                <div>Viking Community</div>
+                <div>المصدر: <a href="https://github.com/itskenethb?tab=repositories">itskenethb</a></div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="src/main.js"></script>
+    <script src="includes/script.js"></script>
+
+    <script>
+    (function () {var cacheEl = document.getElementById("cache");
+        function setCache(text, ok) {
+            if (!cacheEl) return;
+            cacheEl.textContent = text;
+            cacheEl.className = ok ? "cacheok" : "";
+        }
+
+        var ac = window.applicationCache;
+
+        if (!ac || !document.documentElement.hasAttribute("manifest")) {
+            setCache("التخزين المؤقت للتطبيق غير متاح");
+        } else if (!navigator.onLine) {
+            setCache("بدون اتصال -- استخدام الموارد المخزنة", true);
+        } else if (ac.status === ac.IDLE) {
+            setCache("مخزن -- جاهز للاستخدام المحلي", true);
+        } else if (ac.status === ac.UPDATEREADY) {
+            try {
+                ac.swapCache();
+            } catch (e) {}
+            setCache("تم تحميل التحديث -- جاهز للاستخدام المحلي", true);
+        } else {
+            setCache("جاري فحص التخزين...");
+
+            ac.addEventListener("downloading", function () {
+                setCache("جاري التخزين للاستخدام المحلي (التشغيل الأول)...");
+            }, false);
+
+            ac.addEventListener("progress", function (e) {
+                if (e && e.total) {
+                    setCache(
+                        "جاري التخزين " +
+                        Math.round((e.loaded / e.total) * 100) +
+                        "%"
+                    );
+                }
+            }, false);
+
+            ac.addEventListener("cached", function () {
+                setCache("مخزن للاستخدام المحلي", true);
+            }, false);
+
+            ac.addEventListener("updateready", function () {
+                try {
+                    ac.swapCache();
+                } catch (e) {}
+                setCache("تم تحميل التحديث -- جاهز للاستخدام المحلي", true);
+            }, false);
+
+            ac.addEventListener("noupdate", function () {
+                setCache("مخزن -- جاهز للاستخدام المحلي", true);
+            }, false);
+
+            ac.addEventListener("error", function () {
+                setCache("التخزين غير متاح");
+            }, false);
+
+            ac.addEventListener("obsolete", function () {
+                setCache("التخزين قديم");
+            }, false);
+        }
+    })();
+    </script>
+
+</body>
+
+</html>
